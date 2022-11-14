@@ -1,6 +1,7 @@
 const { response } = require('express');
 const express = require('express');
 const app = express();
+app.use(express.json());
 
 
 
@@ -33,6 +34,13 @@ app.get('/', (request, response) => {
 
 app.get('/api/persons', (request, response) => {
     response.json(persons);
+})
+
+app.get('/api/persons/:id', (request, response) => {
+    const id = +request.params.id;
+    console.log(`fetching person of id ${id}`);
+    const personToReturn = persons.find(person => person.id === id);
+    response.json(personToReturn);
 })
 
 app.get('/info', (request, response) => {
