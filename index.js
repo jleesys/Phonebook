@@ -1,6 +1,10 @@
 const { response } = require('express');
 const express = require('express');
 const app = express();
+//import morgan middleware to use for logging
+var morgan = require('morgan');
+
+app.use(morgan('tiny'));
 app.use(express.json());
 
 let persons = [
@@ -79,7 +83,7 @@ app.post('/api/persons', (request, response) => {
     if (persons.find(person => person.name == request.body.name)) {
         return response.status(400).json({"error":"name must be unique"});
     }
-    
+
     const personToAdd = {
         id: generateID(), 
         name: request.body.name,
