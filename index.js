@@ -40,6 +40,9 @@ app.get('/api/persons/:id', (request, response) => {
     const id = +request.params.id;
     console.log(`fetching person of id ${id}`);
     const personToReturn = persons.find(person => person.id === id);
+    
+    if (!personToReturn) response.status(400).json({"error":"person not found"});
+
     response.json(personToReturn);
 })
 
