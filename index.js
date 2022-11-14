@@ -36,7 +36,7 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-    response.send(`<h1>Phonebook has info for ${persons.length+1} people.</h1>
+    response.send(`<h1>Phonebook has info for ${persons.length} people.</h1>
     <div> 
         as of ${new Date()}
     </div>
