@@ -1,4 +1,4 @@
-const { response } = require('express');
+const { response, json } = require('express');
 const express = require('express');
 const app = express();
 //import morgan middleware to use for logging
@@ -6,6 +6,11 @@ var morgan = require('morgan');
 
 app.use(express.json());
 morgan.token('payload', function (request, response) {return JSON.stringify(request.body)});
+// Attempting to log the error message json returned under code 400 - duplicate/missing name
+// Will probably have to write a middleware to parse/access response data
+// morgan.token('errorMessage', function (request, response) {
+//     if (response.body?.error) return JSON.stringify(response.body.error);
+// });
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :payload'));
 
 let persons = [
@@ -79,6 +84,7 @@ const generateID = () => {
 
 app.post('/api/persons', (request, response) => {
     if (!request.body.name || !request.body.number) {
+        console.log(response);
         return response.status(400).json({"error":"missing required attribute"});
     }
     if (persons.find(person => person.name == request.body.name)) {
