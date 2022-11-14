@@ -5,7 +5,7 @@ app.use(express.json());
 
 
 
-const persons = [
+let persons = [
     {
         "id": 1,
         "name": "Arto Hellas",
@@ -44,7 +44,7 @@ app.get('/api/persons/:id', (request, response) => {
     if (!personToReturn) response.status(400).json({"error":"person not found"});
 
     response.json(personToReturn);
-})
+}) 
 
 app.get('/info', (request, response) => {
     response.send(`<h1>Phonebook has info for ${persons.length} people.</h1>
@@ -52,6 +52,13 @@ app.get('/info', (request, response) => {
         as of ${new Date()}
     </div>
     `);
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+    const id = Number(request.params.id);
+    persons = persons.filter(person => person.id !== id);
+
+    response.status(204).end();//.json({"message":"person has been deleted"});
 })
 
 const PORT = 3001;
