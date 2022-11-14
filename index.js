@@ -4,8 +4,9 @@ const app = express();
 //import morgan middleware to use for logging
 var morgan = require('morgan');
 
-app.use(morgan('tiny'));
 app.use(express.json());
+morgan.token('payload', function (request, response) {return JSON.stringify(request.body)});
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :payload'));
 
 let persons = [
     {
@@ -89,7 +90,7 @@ app.post('/api/persons', (request, response) => {
         name: request.body.name,
         number: request.body.number
     }
-    console.log(`Adding person`,personToAdd);
+    // console.log(`Adding person`,personToAdd);
     persons = persons.concat(personToAdd);
 
     response.json(personToAdd);
