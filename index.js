@@ -59,6 +59,32 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end();//.json({"message":"person has been deleted"});
 })
 
+const generateID = () => {
+    let randomInt = Math.floor(Math.random() * 1001);
+    while (persons.find(person => person.id === randomInt)) {
+        console.log('duplicate id generated, rerolling')
+        console.log('(╯°□°）╯︵ ┻━┻')
+        randomInt = Math.floor(Math.random() * 1001);
+    } 
+    console.log('generating random id #', randomInt);
+    return randomInt;
+}
+
+app.post('/api/persons', (request, response) => {
+    if (!request.body.name || !request.body.number) {
+        response.status(400).json({"error":"missing required attribute"});
+    }
+    const personToAdd = {
+        id: generateID(), 
+        name: request.body.name,
+        number: request.body.number
+    }
+    console.log(`Adding person ${personToAdd}`);
+    persons = persons.concat(personToAdd);
+
+    response.json(personToAdd);
+})
+
 const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Server running on Port ${PORT}\nLol, godspeed`)
