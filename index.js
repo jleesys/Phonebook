@@ -5,6 +5,8 @@ const cors = require('cors');
 //import morgan middleware to use for logging
 var morgan = require('morgan');
 app.use(cors());
+app.use(express.static('build'));
+
 
 app.use(express.json());
 morgan.token('payload', function (request, response) {return JSON.stringify(request.body)});
