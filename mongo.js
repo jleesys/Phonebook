@@ -23,15 +23,16 @@ mongoose
         console.log('connected')
 
         const note = new Note({
-            content: 'HTML is easy',
+            content: 'Two lefts do not make a right.',
             date: new Date(),
             important: true,
         })
 
         return note.save();
     })
-    .then(() => {
-        console.log('note saved!')
+    .then((result) => {
+        console.log('note saved!');
+        console.log(result);
         return mongoose.connection.close();
     })
     .catch((err) => console.log(err))
