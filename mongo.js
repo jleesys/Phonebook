@@ -1,57 +1,46 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 if (process.argv.length < 3) {
-    console.log('Please provide the password as an argument: node mongo.js <password>')
+    console.log('Please provide the proper arguments.');
+    console.log('Goodbye');
     process.exit(1);
 }
 
 const password = process.argv[2];
+const personName = process.argv[3];
+const personNumber = process.argv[4];
 
-const url = `mongodb+srv://advent:${password}@cluster0.j3mn3gt.mongodb.net/noteApp?retryWrites=true&w=majority`
+const url = `mongodb+srv://advent:${password}@cluster0.j3mn3gt.mongodb.net/phonebook?retryWrites=true&w=majority`
 
-const noteSchema = new mongoose.Schema({
-    content: String,
-    date: Date,
-    important: Boolean,
+const personSchema = new mongoose.Schema({
+    "name": String,
+    "number": String,
+    "id": Number
 })
 
-const Note = mongoose.model('Note', noteSchema);
-
-
-// Note.find({}).then(result => {
-//     result.forEach(note => {
-//       console.log(note)
-//     })
-//     mongoose.connection.close()
-//   })
-//   .catch(err => console.log(err))
+const Person = mongoose.model('Person', personSchema);
 
 mongoose
     .connect(url)
     .then(result => {
-        Note.find({})
-            .then(result => {
-                result.forEach(note => {
-                    console.log(note)
+        if (process.argv.length > 3) {
+            const person = new Person({
+                "name": personName,
+                "id": 13,
+                "number": personNumber
+            })
+            console.log('saving person')
+            return person.save();
+        }
+        return Person.find({})
+            .then(persons => {
+                persons.forEach(person => {
+                    console.log(person);
                 })
-                mongoose.connection.close()
             })
     })
-
-//     .then((result) => {
-//         console.log('connected')
-
-//         const note = new Note({
-//             content: 'Two lefts do not make a right.',
-//             date: new Date(),
-//             important: true,
-//         })
-
-//         return note.save();
-//     })
-//     .then((result) => {
-//         console.log('note saved!');
-//         console.log(result);
-//         return mongoose.connection.close();
-//     })
-//     .catch((err) => console.log(err))
+    .then(result => {
+        console.log('person saved')
+        console.log(result)
+        return mongoose.connection.close();
+    })
