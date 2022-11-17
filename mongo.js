@@ -17,22 +17,41 @@ const noteSchema = new mongoose.Schema({
 
 const Note = mongoose.model('Note', noteSchema);
 
+
+// Note.find({}).then(result => {
+//     result.forEach(note => {
+//       console.log(note)
+//     })
+//     mongoose.connection.close()
+//   })
+//   .catch(err => console.log(err))
+
 mongoose
     .connect(url)
-    .then((result) => {
-        console.log('connected')
-
-        const note = new Note({
-            content: 'Two lefts do not make a right.',
-            date: new Date(),
-            important: true,
-        })
-
-        return note.save();
+    .then(result => {
+        Note.find({})
+            .then(result => {
+                result.forEach(note => {
+                    console.log(note)
+                })
+                mongoose.connection.close()
+            })
     })
-    .then((result) => {
-        console.log('note saved!');
-        console.log(result);
-        return mongoose.connection.close();
-    })
-    .catch((err) => console.log(err))
+
+//     .then((result) => {
+//         console.log('connected')
+
+//         const note = new Note({
+//             content: 'Two lefts do not make a right.',
+//             date: new Date(),
+//             important: true,
+//         })
+
+//         return note.save();
+//     })
+//     .then((result) => {
+//         console.log('note saved!');
+//         console.log(result);
+//         return mongoose.connection.close();
+//     })
+//     .catch((err) => console.log(err))
