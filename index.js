@@ -1,11 +1,30 @@
+require('dotenv').config()
 const { response, json } = require('express');
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const mongoose = require('mongoose');
 //import morgan middleware to use for logging
 var morgan = require('morgan');
 app.use(cors());
 app.use(express.static('build'));
+
+// DB SETUP
+const Person = require('./models/person')
+// const url = `mongodb+srv://USERNAME:PASS@cluster0.j3mn3gt.mongodb.net/phonebook?retryWrites=true&w=majority`;
+// mongoose.connect(url);
+// const personSchema = new mongoose.Schema({
+//     name: String,
+//     number: String
+// })
+// const Person = mongoose.model('Person', personSchema);
+// personSchema.set('toJSON', {
+//     transform: (document, returnedObject) => {
+//         returnedObject.id = returnedObject._id.toString()
+//         delete returnedObject._id
+//         delete returnedObject.__v
+//     }
+// })
 
 
 app.use(express.json());
@@ -17,35 +36,38 @@ morgan.token('payload', function (request, response) {return JSON.stringify(requ
 // });
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :payload'));
 
-let persons = [
-    {
-        "id": 1,
-        "name": "Arto Hellas",
-        "number": "040-123456"
-    },
-    {
-        "id": 2,
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523"
-    },
-    {
-        "id": 3,
-        "name": "Dan Abramov",
-        "number": "12-43-234345"
-    },
-    {
-        "id": 4,
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
-    }
-]
+// let persons = [
+//     {
+//         "id": 1,
+//         "name": "Arto Hellas",
+//         "number": "040-123456"
+//     },
+//     {
+//         "id": 2,
+//         "name": "Ada Lovelace",
+//         "number": "39-44-5323523"
+//     },
+//     {
+//         "id": 3,
+//         "name": "Dan Abramov",
+//         "number": "12-43-234345"
+//     },
+//     {
+//         "id": 4,
+//         "name": "Mary Poppendieck",
+//         "number": "39-23-6423122"
+//     }
+// ]
 
 app.get('/', (request, response) => {
     response.send(`<h1>Welcome to the Phonebook!</h1>`);
 })
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons);
+    Person.find({}).then(persons => {
+        response.json(persons);
+    })
+    // response.json(persons);
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -91,22 +113,29 @@ app.post('/api/persons', (request, response) => {
         console.log(response);
         return response.status(400).json({"error":"missing required attribute"});
     }
-    if (persons.find(person => person.name == request.body.name)) {
-        return response.status(400).json({"error":"name must be unique"});
-    }
+    // if (persons.find(person => person.name == request.body.name)) {
+    //     return response.status(400).json({"error":"name must be unique"});
+    // }
 
-    const personToAdd = {
-        id: generateID(), 
+    const person = new Person({
         name: request.body.name,
         number: request.body.number
-    }
+    })
+    // const personToAdd = {
+    //     id: generateID(), 
+    //     name: request.body.name,
+    //     number: request.body.number
+    // }
     // console.log(`Adding person`,personToAdd);
-    persons = persons.concat(personToAdd);
+    // persons = persons.concat(personToAdd);
 
-    response.json(personToAdd);
+    person.save().then(savedPerson => {
+        console.log(`Person\n${savedPerson} has been saved to MongoDB`);
+        response.json(savedPerson);
+    });
 })
 
-const PORT = process.env.PORT || "8080";
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
     console.log(`Server running on Port ${PORT}\nLol, godspeed`)
 })
