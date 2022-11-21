@@ -75,11 +75,22 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-    response.send(`<h1>Phonebook has info for ${persons.length} people.</h1>
+    let numPersons = 0;
+    Person.find({})
+        .then(listPersons => {
+            numPersons = listPersons.length;
+            // console.log(listPersons);
+            // console.log(`num persons: `, numPersons, typeof numPersons);
+            response.send(`<h1>Phonebook has info for ${numPersons} people.</h1>
     <div> 
         as of ${new Date()}
     </div>
     `);
+        })
+        .catch(err => {
+            response.status(500).send(`Error fetching info`)
+        })
+
 })
 
 app.delete('/api/persons/:id', (request, response) => {
