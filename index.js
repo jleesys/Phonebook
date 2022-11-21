@@ -11,21 +11,6 @@ app.use(express.static('build'));
 
 // DB SETUP
 const Person = require('./models/person')
-// const url = `mongodb+srv://USERNAME:PASS@cluster0.j3mn3gt.mongodb.net/phonebook?retryWrites=true&w=majority`;
-// mongoose.connect(url);
-// const personSchema = new mongoose.Schema({
-//     name: String,
-//     number: String
-// })
-// const Person = mongoose.model('Person', personSchema);
-// personSchema.set('toJSON', {
-//     transform: (document, returnedObject) => {
-//         returnedObject.id = returnedObject._id.toString()
-//         delete returnedObject._id
-//         delete returnedObject.__v
-//     }
-// })
-
 
 app.use(express.json());
 morgan.token('payload', function (request, response) {return JSON.stringify(request.body)});
@@ -70,6 +55,7 @@ app.get('/api/persons', (request, response) => {
     // response.json(persons);
 })
 
+// CHANGE: Implement grabbing by new STRING objectID(from mongo)
 app.get('/api/persons/:id', (request, response) => {
     const id = +request.params.id;
     console.log(`fetching person of id ${id}`);
