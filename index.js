@@ -13,7 +13,7 @@ app.use(express.static('build'));
 const Person = require('./models/person')
 
 app.use(express.json());
-morgan.token('payload', function (request, response) {return JSON.stringify(request.body)});
+morgan.token('payload', function (request, response) { return JSON.stringify(request.body) });
 // Attempting to log the error message json returned under code 400 - duplicate/missing name
 // Will probably have to write a middleware to parse/access response data
 // morgan.token('errorMessage', function (request, response) {
@@ -57,14 +57,22 @@ app.get('/api/persons', (request, response) => {
 
 // CHANGE: Implement grabbing by new STRING objectID(from mongo)
 app.get('/api/persons/:id', (request, response) => {
-    const id = +request.params.id;
-    console.log(`fetching person of id ${id}`);
-    const personToReturn = persons.find(person => person.id === id);
-    
-    if (!personToReturn) response.status(400).json({"error":"person not found"});
-
-    response.json(personToReturn);
-}) 
+    const idToFind = request.params.id;
+    console.log(`fetching person of id ${idToFind}`);
+    // const personToReturn = persons.find(person => person.id === id);
+    const personToReturn =
+        Person.findById(idToFind)
+            .then(gotDoc => {
+                if (gotDoc) {
+                    response.json(gotDoc);
+                } else {
+                    response.status(404).send({ "error": "encountered error, object not found" })
+                }
+            })
+            .catch(err => {
+                response.status(400).send({ "error": "error encountered while fetching id. Check id type and content" })
+            })
+})
 
 app.get('/info', (request, response) => {
     response.send(`<h1>Phonebook has info for ${persons.length} people.</h1>
@@ -84,12 +92,12 @@ app.delete('/api/persons/:id', (request, response) => {
 // generates a rando integer, 1000 or under.
 // regenerates int if there is a duplicate found -- may slow down program at larger scale
 const generateID = () => {
-    let randomInt = Math.floor((Math.random() * 1000)+1);
+    let randomInt = Math.floor((Math.random() * 1000) + 1);
     while (persons.find(person => person.id === randomInt)) {
         console.log('duplicate id generated, rerolling')
         console.log('(╯°□°）╯︵ ┻━┻')
-        randomInt = Math.floor((Math.random() * 1000)+1);
-    } 
+        randomInt = Math.floor((Math.random() * 1000) + 1);
+    }
     console.log('generating random id #', randomInt);
     return randomInt;
 }
@@ -97,7 +105,7 @@ const generateID = () => {
 app.post('/api/persons', (request, response) => {
     if (!request.body.name || !request.body.number) {
         console.log(response);
-        return response.status(400).json({"error":"missing required attribute"});
+        return response.status(400).json({ "error": "missing required attribute" });
     }
     // if (persons.find(person => person.name == request.body.name)) {
     //     return response.status(400).json({"error":"name must be unique"});
