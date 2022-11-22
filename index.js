@@ -9,6 +9,7 @@ var morgan = require('morgan');
 app.use(cors());
 app.use(express.static('build'));
 
+
 // DB SETUP
 const Person = require('./models/person')
 
@@ -20,6 +21,7 @@ morgan.token('payload', function (request, response) { return JSON.stringify(req
 //     if (response.body?.error) return JSON.stringify(response.body.error);
 // });
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :payload'));
+
 
 // let persons = [
 //     {
@@ -56,9 +58,9 @@ app.get('/api/persons', (request, response) => {
 })
 
 // CHANGE: Implement grabbing by new STRING objectID(from mongo)
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     const idToFind = request.params.id;
-    console.log(`fetching person of id ${idToFind}`);
+    // console.log(`fetching person of id ${idToFind}`);
     // const personToReturn = persons.find(person => person.id === id);
     const personToReturn =
         Person.findById(idToFind)
@@ -69,9 +71,12 @@ app.get('/api/persons/:id', (request, response) => {
                     response.status(404).send({ "error": "encountered error, object not found" })
                 }
             })
-            .catch(err => {
-                response.status(400).send({ "error": "error encountered while fetching id. Check id type and content" })
-            })
+            .catch(error => next(error))
+    // .catch(err => {
+    //     // ADDING ERROR HANDLING MIDDLEWARE
+    //     next(err);
+    //     // response.status(400).send({ "error": "error encountered while fetching id. Check id type and content" })
+    // })
 })
 
 app.get('/info', (request, response) => {
@@ -95,7 +100,7 @@ app.get('/info', (request, response) => {
 
 app.delete('/api/persons/:id', (request, response) => {
     const idToDelete = request.params.id;
-    Person.findByIdAndDelete(idToDelete )
+    Person.findByIdAndDelete(idToDelete)
         .then(deletedDoc => {
             if (deletedDoc) {
                 console.log('INFO: Deleted doc.')
@@ -149,6 +154,18 @@ app.post('/api/persons', (request, response) => {
         response.json(savedPerson);
     });
 })
+
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message);
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ error: 'malformatted id' })
+    }
+    next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
