@@ -112,16 +112,16 @@ app.delete('/api/persons/:id', (request, response) => {
 
 // generates a rando integer, 1000 or under.
 // regenerates int if there is a duplicate found -- may slow down program at larger scale
-const generateID = () => {
-    let randomInt = Math.floor((Math.random() * 1000) + 1);
-    while (persons.find(person => person.id === randomInt)) {
-        console.log('duplicate id generated, rerolling')
-        console.log('(╯°□°）╯︵ ┻━┻')
-        randomInt = Math.floor((Math.random() * 1000) + 1);
-    }
-    console.log('generating random id #', randomInt);
-    return randomInt;
-}
+// const generateID = () => {
+//     let randomInt = Math.floor((Math.random() * 1000) + 1);
+//     while (persons.find(person => person.id === randomInt)) {
+//         console.log('duplicate id generated, rerolling')
+//         console.log('(╯°□°）╯︵ ┻━┻')
+//         randomInt = Math.floor((Math.random() * 1000) + 1);
+//     }
+//     console.log('generating random id #', randomInt);
+//     return randomInt;
+// }
 
 app.post('/api/persons', (request, response) => {
     if (!request.body.name || !request.body.number) {
