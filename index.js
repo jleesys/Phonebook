@@ -155,7 +155,11 @@ app.post('/api/persons', (request, response) => {
     });
 })
 
-// error handling
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({error: 'Unknown endpoint'})
+}
+
+app.use(unknownEndpoint);
 
 const errorHandler = (error, request, response, next) => {
     console.error(error.message);
