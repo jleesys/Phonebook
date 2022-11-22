@@ -98,7 +98,7 @@ app.get('/info', (request, response) => {
 
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     const idToDelete = request.params.id;
     Person.findByIdAndDelete(idToDelete)
         .then(deletedDoc => {
@@ -110,7 +110,8 @@ app.delete('/api/persons/:id', (request, response) => {
             }
         })
         .catch(err => {
-            response.status(400).send({ "Error": "Bad query." })
+            // response.status(400).send({ "Error": "Bad query." })
+            next(err)
         })
 
 })
