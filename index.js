@@ -1,5 +1,5 @@
 require('dotenv').config()
-const { response, json } = require('express');
+const { response, json, request } = require('express');
 const express = require('express');
 const app = express();
 const cors = require('cors');
@@ -114,6 +114,20 @@ app.delete('/api/persons/:id', (request, response, next) => {
             next(err)
         })
 
+})
+
+app.put('/api/persons/:id', (request, response, next) => {
+    const idToPut = request.params.id;
+
+    const note = {
+        name: request.body.name,
+        number: request.body.number
+    }
+    Person.findByIdAndUpdate(idToPut, note, { new: true })
+        .then(updatedNote => {
+            response.json(updatedNote)
+        })
+        .catch(err => next(error))
 })
 
 // generates a rando integer, 1000 or under.
