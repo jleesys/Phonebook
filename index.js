@@ -104,7 +104,7 @@ app.delete('/api/persons/:id', (request, response) => {
         .then(deletedDoc => {
             if (deletedDoc) {
                 console.log('INFO: Deleted doc.')
-                response.status(200).send(deletedDoc);
+                response.status(204).end()
             } else {
                 response.status(404).send({ "Error": "Could not find person." });
             }
