@@ -94,10 +94,20 @@ app.get('/info', (request, response) => {
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id);
-    persons = persons.filter(person => person.id !== id);
+    const idToDelete = request.params.id;
+    Person.findByIdAndDelete(idToDelete )
+        .then(deletedDoc => {
+            if (deletedDoc) {
+                console.log('INFO: Deleted doc.')
+                response.status(200).send(deletedDoc);
+            } else {
+                response.status(404).send({ "Error": "Could not find person." });
+            }
+        })
+        .catch(err => {
+            response.status(400).send({ "Error": "Bad query." })
+        })
 
-    response.status(204).end();//.json({"message":"person has been deleted"});
 })
 
 // generates a rando integer, 1000 or under.
