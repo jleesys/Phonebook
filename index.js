@@ -143,7 +143,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 //     return randomInt;
 // }
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     if (!request.body.name || !request.body.number) {
         console.log(response);
         return response.status(400).json({ "error": "missing required attribute" });
@@ -164,23 +164,29 @@ app.post('/api/persons', (request, response) => {
     // console.log(`Adding person`,personToAdd);
     // persons = persons.concat(personToAdd);
 
-    person.save().then(savedPerson => {
-        console.log(`Person\n${savedPerson} has been saved to MongoDB`);
-        response.json(savedPerson);
-    });
+    person.save()
+        .then(savedPerson => {
+            console.log(`Person\n${savedPerson} has been saved to MongoDB`);
+            response.json(savedPerson);
+        })
+        .catch(error => {
+            next(error);
+        });
 })
 
 const unknownEndpoint = (request, response) => {
-    response.status(404).send({error: 'Unknown endpoint'})
+    response.status(404).send({ error: 'Unknown endpoint' })
 }
 
 app.use(unknownEndpoint);
 
 const errorHandler = (error, request, response, next) => {
     console.error(error.message);
-
     if (error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    }
+    if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: "Bad request. Did not pass validation." })
     }
     next(error)
 }
