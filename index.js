@@ -72,9 +72,9 @@ app.get('/api/persons/:id', (request, response, next) => {
                 }
             })
             .catch(error => next(error))
-    // .catch(err => {
+    // .catch( => {
     //     // ADDING ERROR HANDLING MIDDLEWARE
-    //     next(err);
+    //     next();
     //     // response.status(400).send({ "error": "error encountered while fetching id. Check id type and content" })
     // })
 })
@@ -92,7 +92,7 @@ app.get('/info', (request, response) => {
     </div>
     `);
         })
-        .catch(err => {
+        .catch(error => {
             response.status(500).send(`Error fetching info`)
         })
 
@@ -109,9 +109,8 @@ app.delete('/api/persons/:id', (request, response, next) => {
                 response.status(404).send({ "Error": "Could not find person." });
             }
         })
-        .catch(err => {
-            // response.status(400).send({ "Error": "Bad query." })
-            next(err)
+        .catch(error => {
+            next(error)
         })
 
 })
@@ -120,14 +119,14 @@ app.put('/api/persons/:id', (request, response, next) => {
     const idToPut = request.params.id;
 
     const note = {
-        name: request.body.name,
+        // name: request.body.name,
         number: request.body.number
     }
-    Person.findByIdAndUpdate(idToPut, note, { new: true })
+    Person.findByIdAndUpdate(idToPut, note, { runValidators: true, new: true })
         .then(updatedNote => {
             response.json(updatedNote)
         })
-        .catch(err => next(error))
+        .catch(error => next(error))
 })
 
 // generates a rando integer, 1000 or under.
