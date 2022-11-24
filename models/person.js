@@ -19,7 +19,17 @@ const personSchema = new mongoose.Schema({
     number: {
         type: String,
         required: true,
-        minLength: 8
+        minLength: 9,
+        validate: {
+            validator: function(v) {
+                // if ( (/\d{3}-\d{5,}/.test(v)) || ((/\d{2}-\d{6,}/.test(v))) ) {
+                if ( (/^\d{3}-\d{5,}$/.test(v)) || ((/^\d{2}-\d{6,}$/.test(v))) ) {
+                    return true;
+                }
+                return false;
+            },
+            message: props => `${props.value} is not a valid phone number! Must be at least 8 numbers, and include a dash.`
+        }
     }
     // IMPLEMENT VALIDATION 
     // name: String,

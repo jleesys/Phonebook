@@ -124,6 +124,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     }
     Person.findByIdAndUpdate(idToPut, note, { runValidators: true, new: true })
         .then(updatedNote => {
+            console.log('Putted.')
             response.json(updatedNote)
         })
         .catch(error => next(error))
@@ -185,7 +186,7 @@ const errorHandler = (error, request, response, next) => {
         return response.status(400).send({ error: 'malformatted id' })
     }
     if (error.name === 'ValidationError') {
-        return response.status(400).json({ error: "Bad request. Did not pass validation." })
+        return response.status(400).json({ error: `${error.message}` }); //"Bad request. Did not pass validation." })
     }
     next(error)
 }
